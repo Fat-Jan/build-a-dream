@@ -1,5 +1,7 @@
 # Build a Dream（把想法变成能展示的 Demo）
 
+![Claude](https://img.shields.io/badge/Claude-skill%20pack-7c3aed) ![Codex](https://img.shields.io/badge/Codex-skill%20pack-22c55e) ![No dependencies](https://img.shields.io/badge/deps-zero-blue) ![Beginner friendly](https://img.shields.io/badge/beginner-friendly-f59e0b)
+
 **一句话：Build a Dream 帮 0 基础新手把一个模糊梦想，变成「先能展示」的技术栈推荐和 AI 可执行计划。**
 
 每个小作品一开始都像一个梦：想法很激动，但不知道从哪里开始。Build a Dream 做的事，就是把这个梦拆成 AI 能一步步执行的路线：先确定要展示什么，再选择最省力的技术栈，最后生成可验证的 Demo 计划。
@@ -16,6 +18,13 @@
 名字里的 `dream`（梦想）不是大而空的愿望，而是任何一句“我想做一个……”的开始。这个项目帮你把它变成今天就能展示的第一版。
 
 ---
+
+## 快速导航
+
+- **第一次使用**：直接看 [0 基础怎么用](#0-基础怎么用)。
+- **黑客松展示**：直接看 [60 秒无声演示路径](#60-秒无声演示路径)。
+- **想看效果**：打开 `demo/index.html`。
+- **想看 AI 输出样例**：打开 `examples/beginner-demo-plan.md`。
 
 ## 适合谁
 
@@ -141,6 +150,16 @@ Use the fix-error-safely skill. Reproduce the problem, fix the smallest cause, a
 
 ---
 
+## 先看效果
+
+如果你只是想先确认这个项目长什么样，不需要安装，直接打开：
+
+```text
+demo/index.html
+```
+
+这个页面就是给评委看的无声 Demo：它会展示项目定位、4 个技能、Before / After 对比和真实运行脚本。
+
 ## 60 秒无声演示路径
 
 如果你要交黑客松，没法现场讲太多，可以这样展示：
@@ -223,6 +242,16 @@ examples/beginner-demo-plan.md
 - MVP 范围
 - 不做什么
 - 每一步怎么验证
+
+---
+
+## 提交时可以展示的亮点
+
+- **不是 prompt 合集**：它是一条新手工作流。
+- **先展示，再技术选型**：减少小白一上来就选错栈。
+- **Claude / Codex 通用**：同一套思路可安装到多个 agent 目录。
+- **每一步可验证**：避免 AI 一口气写很多但跑不起来。
+- **无声可演示**：`demo/index.html` 和 README 可以自己说明项目。
 
 ---
 
