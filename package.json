@@ -1,0 +1,22 @@
+{
+  "name": "vibe-coding-driving-school",
+  "version": "0.1.0",
+  "description": "Build a Dream helps beginners turn rough ideas into display-first stack choices and Claude/Codex-executable demo plans.",
+  "type": "module",
+  "bin": {
+    "vibe-driving-school": "./install.mjs"
+  },
+  "scripts": {
+    "install:local": "node install.mjs",
+    "demo": "node -e \"console.log('Open demo/index.html in your browser')\"",
+    "validate": "node scripts/validate.mjs"
+  },
+  "keywords": [
+    "claude",
+    "codex",
+    "skills",
+    "vibe-coding",
+    "hackathon"
+  ],
+  "license": "MIT"
+}

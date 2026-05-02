@@ -1,0 +1,1451 @@
+From 71cc3c3c21f1120e92d2e18d7818c2f876d0b35e Mon Sep 17 00:00:00 2001
+From: AI Optimization Bot <bot@example.com>
+Date: Sat, 2 May 2026 16:27:31 +0800
+Subject: [PATCH] feat: add Build a Dream skill pack
+
+---
+ .gitignore                                    |   5 +
+ README.md                                     | 322 ++++++++++++++++++
+ demo/index.html                               | 134 ++++++++
+ .../2026-05-02-vibe-coding-driving-school.md  |  79 +++++
+ examples/beginner-demo-plan.md                |  42 +++
+ install.mjs                                   | 243 +++++++++++++
+ package.json                                  |  22 ++
+ scripts/validate.mjs                          | 151 ++++++++
+ skills/build-step-by-step/SKILL.md            |  67 ++++
+ skills/choose-stack/SKILL.md                  |  79 +++++
+ skills/fix-error-safely/SKILL.md              |  64 ++++
+ skills/start-project/SKILL.md                 | 102 ++++++
+ templates/AGENTS.md                           |  26 ++
+ 13 files changed, 1336 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 README.md
+ create mode 100644 demo/index.html
+ create mode 100644 docs/superpowers/plans/2026-05-02-vibe-coding-driving-school.md
+ create mode 100644 examples/beginner-demo-plan.md
+ create mode 100755 install.mjs
+ create mode 100644 package.json
+ create mode 100755 scripts/validate.mjs
+ create mode 100644 skills/build-step-by-step/SKILL.md
+ create mode 100644 skills/choose-stack/SKILL.md
+ create mode 100644 skills/fix-error-safely/SKILL.md
+ create mode 100644 skills/start-project/SKILL.md
+ create mode 100644 templates/AGENTS.md
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..3985644
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,5 @@
++node_modules/
++.DS_Store
++.env
++/dist/
++/tmp/
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..ccb2ad9
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,322 @@
++# Build a Dream（把想法变成能展示的 Demo）
++
++**一句话：Build a Dream 帮 0 基础新手把一个模糊梦想，变成「先能展示」的技术栈推荐和 AI 可执行计划。**
++
++每个小作品一开始都像一个梦：想法很激动，但不知道从哪里开始。Build a Dream 做的事，就是把这个梦拆成 AI 能一步步执行的路线：先确定要展示什么，再选择最省力的技术栈，最后生成可验证的 Demo 计划。
++
++它内置一套给 Claude / Codex 使用的技能包。你不需要先学一堆编程概念，只需要先回答四个简单问题：
++
++1. 你想让别人先看到什么？
++2. 用什么技术栈最快做出可展示 Demo？
++3. 第一版只做哪些功能？
++4. AI 下一步应该怎么做、怎么验证？
++
++> 核心原则：**Dream → visible demo → stack → verified plan**（梦想/想法 → 可见 Demo → 技术栈 → 可验证计划）。
++
++名字里的 `dream`（梦想）不是大而空的愿望，而是任何一句“我想做一个……”的开始。这个项目帮你把它变成今天就能展示的第一版。
++
++---
++
++## 适合谁
++
++- 0 基础或刚入门，想用 AI 做一个小作品的人。
++- 黑客松参赛者，需要快速做出能展示的 Demo。
++- 经常对 AI 说“帮我做个 app”，然后项目越做越乱的人。
++- Claude / Codex 用户，希望 AI 一步一步做、每一步都能验证。
++
++## 不适合谁
++
++- 已经有完整工程团队、架构设计和技术路线的大项目。
++- 想要大型 prompt 库，而不是一个新手引导流程的人。
++- 一开始就必须做复杂后端、账号系统、支付、上云部署的项目。
++
++---
++
++## 它怎么帮你 Build a Dream
++
++安装后，你的项目里会多出 4 个技能，像一套“AI 新手导航”：
++
++| 技能 | 作用 | 适合什么时候用 |
++|---|---|---|
++| `choose-stack` | 根据“想展示什么”推荐技术栈 | 不知道该用什么语言/框架 |
++| `start-project` | 把一句想法变成小范围 Demo 计划 | 刚开始一个项目 |
++| `build-step-by-step` | 让 AI 一次只做一个可验证步骤 | 开始实现时 |
++| `fix-error-safely` | 报错后先复现，再修最小问题 | 跑不起来、测试失败、页面坏了 |
++
++---
++
++## 0 基础怎么用
++
++### 第 1 步：准备
++
++你只需要会打开终端，并且电脑里有 Node.js。
++
++可以先检查：
++
++```bash
++node --version
++```
++
++如果能看到版本号，比如 `v20.x` 或 `v24.x`，就可以继续。
++
++### 第 2 步：安装技能
++
++在这个项目文件夹里运行：
++
++```bash
++node install.mjs
++```
++
++如果你想先看看它会安装到哪里，但不真的写入文件：
++
++```bash
++node install.mjs --dry-run --target all
++```
++
++如果你要安装到另一个项目里：
++
++```bash
++node install.mjs --project ../my-demo --target all
++```
++
++### 第 3 步：打开 Claude 或 Codex
++
++进入你要做作品的项目文件夹，然后打开 Claude / Codex。
++
++把下面这句话粘进去：
++
++```text
++Use the start-project skill to turn this idea into a small demo-first plan: a habit tracker for students.
++```
++
++中文也可以：
++
++```text
++使用 start-project 技能，把这个想法变成一个优先能展示的 Demo 计划：给学生用的习惯打卡工具。
++```
++
++> Codex 用户如果支持技能提及，也可以写 `$start-project`。
++
++### 第 4 步：让 AI 一步一步做
++
++拿到计划后，再粘这句：
++
++```text
++Use the build-step-by-step skill. Build step 1 only, then stop and tell me how to verify it.
++```
++
++中文版本：
++
++```text
++使用 build-step-by-step 技能。只做第 1 步，做完停下，并告诉我怎么验证。
++```
++
++如果报错，粘这句：
++
++```text
++Use the fix-error-safely skill. Reproduce the problem, fix the smallest cause, and verify again.
++```
++
++中文版本：
++
++```text
++使用 fix-error-safely 技能。先复现问题，再修最小原因，最后重新验证。
++```
++
++---
++
++## 技术栈推荐规则
++
++这套技能不会一上来问“你想用什么语言”，而是先问：**你想最快展示什么？**
++
++| 你想展示的东西 | 默认推荐 | 为什么 |
++|---|---|---|
++| 网页、作品页、Dashboard、表单 | TypeScript + Vite + React | 浏览器里最快看到效果 |
++| 小工具、安装器、脚手架 | Node.js | 容易运行，容易打包 |
++| CLI、轻量服务、可分发工具 | Go | 稳定，容易做成单文件工具 |
++| 数据处理、批量脚本、临时自动化 | Python | 适合脚本和数据处理 |
++| 性能核心、本地底层模块 | Rust | 只在确实需要性能/底层能力时使用 |
++| 手机展示 | 先做响应式网页 | 不先做原生 App，节省时间 |
++| 桌面展示 | 先做网页 | 不先上 Electron，避免过度工程 |
++
++---
++
++## 60 秒无声演示路径
++
++如果你要交黑客松，没法现场讲太多，可以这样展示：
++
++1. 打开 `demo/index.html`。
++2. 指给评委看这一句：`Dream → visible demo → stack → verified plan`。
++3. 展示 4 个卡片：`choose-stack`、`start-project`、`build-step-by-step`、`fix-error-safely`。
++4. 滚到 Before / After 对比。
++5. 打开 `examples/beginner-demo-plan.md`，展示 AI 最终应该产出的计划长什么样。
++
++---
++
++## 安装目标说明
++
++默认 `node install.mjs` 会安装到 3 个位置，方便不同工具读取：
++
++| target | 安装位置 | 说明 |
++|---|---|---|
++| `claude` | `.claude/skills` | Claude 使用 |
++| `codex` | `.codex/skills` | Codex 使用 |
++| `agents` | `.agents/skills` | 通用 agent / Codex 风格技能目录 |
++| `both` | `.claude/skills` + `.codex/skills` | 同时给 Claude 和 Codex |
++| `all` | 上面 3 个都装 | 默认选项 |
++
++常用命令：
++
++```bash
++node install.mjs --target claude
++node install.mjs --target codex
++node install.mjs --target all
++```
++
++如果目标位置已经有同名技能，默认会跳过，避免覆盖你的文件。
++
++如果你确认要覆盖：
++
++```bash
++node install.mjs --force
++```
++
++---
++
++## 安装后怎么检查
++
++运行：
++
++```bash
++node scripts/validate.mjs
++```
++
++看到下面这句就说明项目文件结构没问题：
++
++```text
++Validation passed.
++```
++
++也可以检查目标项目里是否出现这些文件夹：
++
++```text
++.claude/skills/start-project
++.codex/skills/start-project
++.agents/skills/start-project
++```
++
++---
++
++## 示例输出
++
++可以打开：
++
++```text
++examples/beginner-demo-plan.md
++```
++
++里面展示了一个“学生习惯打卡工具”的 Demo 计划，包括：
++
++- 作品想法
++- 想让别人先看到什么
++- 推荐技术栈
++- MVP 范围
++- 不做什么
++- 每一步怎么验证
++
++---
++
++## 黑客松 pitch
++
++**Build a Dream：把一句模糊的梦想，变成 Claude / Codex 能照着执行的 Demo 路线图。**
++
++它先问“你想让别人看到什么”，再推荐最合适的技术栈，最后把项目拆成一步一步可验证的执行计划。
++
++更短的英文版：
++
++**Build a Dream turns a rough idea into a visible demo plan: choose what people should see first, pick the simplest stack, and build one verified step at a time.**
++
++---
++
++# English Version
++
++## What is this?
++
++Build a Dream is a Claude/Codex skill pack for beginners. It turns a rough dream or product idea into a display-first stack recommendation and a step-by-step plan an AI coding agent can execute.
++
++Core flow:
++
++**Dream → visible demo → stack → verified plan**
++
++## Who is it for?
++
++- Beginners building their first AI-assisted demo.
++- Hackathon teams that need a visible MVP quickly.
++- People who tend to overbuild before they can show anything.
++- Claude or Codex users who want controlled, step-by-step execution.
++
++## Quick start
++
++Install from this folder:
++
++```bash
++node install.mjs
++```
++
++Preview without writing files:
++
++```bash
++node install.mjs --dry-run --target all
++```
++
++Install into another project:
++
++```bash
++node install.mjs --project ../my-demo --target all
++```
++
++Then open Claude or Codex in your project and paste:
++
++```text
++Use the start-project skill to turn this idea into a small demo-first plan: a habit tracker for students.
++```
++
++Then continue with:
++
++```text
++Use the build-step-by-step skill. Build step 1 only, then stop and tell me how to verify it.
++```
++
++If something breaks:
++
++```text
++Use the fix-error-safely skill. Reproduce the problem, fix the smallest cause, and verify again.
++```
++
++Codex users can also mention `$start-project`, `$build-step-by-step`, or `$fix-error-safely` if skill mentions are enabled.
++
++## Included skills
++
++| Skill | Job |
++|---|---|
++| `choose-stack` | Recommends the fastest stack from the desired demo surface |
++| `start-project` | Turns a rough idea into a small demo-first project plan |
++| `build-step-by-step` | Builds one verified slice at a time |
++| `fix-error-safely` | Reproduces errors, fixes the smallest cause, verifies again |
++
++## Stack defaults
++
++| What you want to show | Recommended default |
++|---|---|
++| Website, dashboard, form, visual product | TypeScript + Vite + React |
++| Tool, installer, project generator | Node.js |
++| CLI or lightweight service | Go |
++| Data cleanup, scripts, glue automation | Python |
++| Performance or systems core | Rust only when necessary |
++| Mobile or desktop demo | Responsive web first |
++
++## Silent demo
++
++Open `demo/index.html` in a browser. It explains Build a Dream without a live presentation.
++
++For a sample output, open `examples/beginner-demo-plan.md`.
+diff --git a/demo/index.html b/demo/index.html
+new file mode 100644
+index 0000000..f2cccb5
+--- /dev/null
++++ b/demo/index.html
+@@ -0,0 +1,134 @@
++<!doctype html>
++<html lang="en">
++<head>
++  <meta charset="utf-8" />
++  <meta name="viewport" content="width=device-width, initial-scale=1" />
++  <title>Build a Dream</title>
++  <style>
++    :root {
++      color-scheme: dark;
++      --bg: #0d1117;
++      --card: #151b23;
++      --card-2: #1f2937;
++      --text: #f8fafc;
++      --muted: #a1a1aa;
++      --line: #2d3748;
++      --accent: #7c3aed;
++      --accent-2: #22c55e;
++      --warn: #f59e0b;
++    }
++    * { box-sizing: border-box; }
++    body {
++      margin: 0;
++      min-height: 100vh;
++      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
++      background: radial-gradient(circle at top left, rgba(124, 58, 237, 0.22), transparent 34%), var(--bg);
++      color: var(--text);
++    }
++    main { max-width: 1080px; margin: 0 auto; padding: 56px 20px; }
++    .hero { display: grid; gap: 24px; grid-template-columns: 1.2fr 0.8fr; align-items: center; }
++    .badge { display: inline-flex; gap: 8px; align-items: center; color: #ddd6fe; background: rgba(124, 58, 237, 0.16); border: 1px solid rgba(124, 58, 237, 0.4); border-radius: 999px; padding: 8px 12px; font-size: 14px; }
++    h1 { font-size: clamp(42px, 8vw, 88px); line-height: 0.95; margin: 18px 0; letter-spacing: -0.06em; }
++    h2 { font-size: 28px; margin: 0 0 14px; }
++    p { color: var(--muted); font-size: 18px; line-height: 1.65; }
++    .card { background: rgba(21, 27, 35, 0.86); border: 1px solid var(--line); border-radius: 28px; padding: 24px; box-shadow: 0 24px 80px rgba(0,0,0,.28); }
++    .terminal { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: #06080d; border-radius: 18px; padding: 18px; color: #d1fae5; line-height: 1.7; font-size: 14px; overflow-x: auto; overflow-wrap: anywhere; white-space: pre-wrap; }
++    .copy-row { display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
++    .copy-btn { border: 1px solid var(--line); background: #111827; color: var(--text); padding: 10px 14px; border-radius: 999px; cursor: pointer; }
++    .copy-btn:hover { border-color: #4b5563; }
++    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 26px; }
++    .step { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 20px; }
++    .step strong { color: white; display: block; margin-bottom: 8px; }
++    .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 48px 0; }
++    .pill { border: 1px solid var(--line); border-radius: 18px; padding: 16px; background: rgba(31, 41, 55, 0.72); }
++    .pill b { color: var(--accent-2); }
++    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 32px; }
++    .bad { border-color: rgba(245, 158, 11, .45); }
++    .good { border-color: rgba(34, 197, 94, .45); }
++    code { color: #c4b5fd; }
++    footer { margin-top: 44px; color: var(--muted); font-size: 15px; }
++    @media (max-width: 800px) {
++      .hero, .grid, .flow, .compare { grid-template-columns: 1fr; }
++      main { padding-top: 28px; }
++      h1 { font-size: clamp(36px, 13vw, 62px); }
++    }
++  </style>
++</head>
++<body>
++  <main>
++    <section class="hero">
++      <div>
++        <span class="badge">🌱 Build a Dream</span>
++        <h1>Turn rough ideas into visible demos.</h1>
++        <p>A vibe coding driving school for beginners: choose the visible demo first, pick the simplest stack, and build one verified step at a time.</p>
++      </div>
++      <div class="card">
++        <div class="terminal" id="terminal-text">$ node install.mjs
++Installed choose-stack
++Installed start-project
++Installed build-step-by-step
++Installed fix-error-safely
++
++Prompt:
++Use the start-project skill to turn this idea into a small demo-first plan: a habit tracker for students. (Codex can also use $start-project.)</div>
++        <div class="copy-row">
++          <button class="copy-btn" id="copy-btn">Copy prompt</button>
++          <span id="copy-status" style="color: var(--muted); font-size: 14px;">Ready to paste into Claude or Codex.</span>
++        </div>
++      </div>
++    </section>
++
++    <section class="flow">
++      <div class="pill"><b>1</b><br />Idea</div>
++      <div class="pill"><b>2</b><br />Demo surface</div>
++      <div class="pill"><b>3</b><br />Stack choice</div>
++      <div class="pill"><b>4</b><br />Verified build plan</div>
++    </section>
++
++    <section class="grid">
++      <div class="step"><strong>choose-stack</strong>Recommends Web, Node, Go, Python, or Rust based on what should be shown first.</div>
++      <div class="step"><strong>start-project</strong>Turns a vague idea into a small MVP plan with explicit non-goals.</div>
++      <div class="step"><strong>build-step-by-step</strong>Keeps the AI building one visible, verifiable slice at a time.</div>
++      <div class="step"><strong>fix-error-safely</strong>Reproduces the bug first, then fixes the smallest cause and verifies again.</div>
++    </section>
++
++    <section class="compare">
++      <div class="card bad">
++        <h2>Before</h2>
++        <p>"Build me an app" → AI picks a random stack, adds auth, database, deployment, and breaks before demo time.</p>
++      </div>
++      <div class="card good">
++        <h2>After</h2>
++        <p>"What should people see first?" → choose the simplest stack, define a tiny MVP, verify each step.</p>
++      </div>
++    </section>
++
++    <section class="card" style="margin-top: 32px;">
++      <h2>Real run transcript</h2>
++      <p>Use this as the silent-demo script:</p>
++      <div class="terminal">User: Use the start-project skill to turn this idea into a small demo-first plan.
++Assistant: What's the visible demo surface?
++User: A browser page with today view and one-click toggles.
++Assistant: Recommended stack: TypeScript + Vite + React.
++Assistant: Here's a verified plan with 4 steps and explicit non-goals.</div>
++    </section>
++
++    <footer>
++      Hackathon pitch: Build a Dream turns a rough idea into a visible demo plan Claude or Codex can execute. Open README.md for install and usage.
++    </footer>
++  </main>
++  <script>
++    const promptText = 'Use the start-project skill to turn this idea into a small demo-first plan: a habit tracker for students. (Codex can also use $start-project.)';
++    const btn = document.getElementById('copy-btn');
++    const status = document.getElementById('copy-status');
++    btn.addEventListener('click', async () => {
++      try {
++        await navigator.clipboard.writeText(promptText);
++        status.textContent = 'Copied.';
++      } catch {
++        status.textContent = 'Copy failed; select and copy manually.';
++      }
++    });
++  </script>
++</body>
++</html>
+diff --git a/docs/superpowers/plans/2026-05-02-vibe-coding-driving-school.md b/docs/superpowers/plans/2026-05-02-vibe-coding-driving-school.md
+new file mode 100644
+index 0000000..4a8ed7d
+--- /dev/null
++++ b/docs/superpowers/plans/2026-05-02-vibe-coding-driving-school.md
+@@ -0,0 +1,79 @@
++# Vibe Coding Driving School Implementation Plan
++
++> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
++
++**Goal:** Build a small hackathon-ready package that installs Claude/Codex-compatible skills for beginner-friendly vibe coding.
++
++**Architecture:** Use a zero-dependency Node installer to copy a shared `skills/` pack into Claude and Codex skill locations. Keep the product explainable through README, a static demo page, and an example generated plan.
++
++**Tech Stack:** Node.js ESM for installer/validation, Markdown `SKILL.md` files for agent skills, static HTML/CSS/JS for the silent demo.
++
++---
++
++## File Map
++
++- `package.json`: npm metadata and runnable scripts.
++- `install.mjs`: zero-dependency installer with `--target`, `--project`, and `--dry-run` options.
++- `scripts/validate.mjs`: repository validation for required files and skill frontmatter.
++- `skills/*/SKILL.md`: four Claude/Codex-compatible beginner workflow skills.
++- `templates/AGENTS.md`: optional project guidance copied during install.
++- `examples/beginner-demo-plan.md`: sample output showing the product promise.
++- `demo/index.html`: no-speech demo page for judges.
++- `README.md`: install, demo, and positioning.
++
++## Tasks
++
++### Task 1: Project skeleton
++
++**Files:**
++- Create: `package.json`
++- Create: `.gitignore`
++- Create: `docs/superpowers/plans/2026-05-02-vibe-coding-driving-school.md`
++
++- [x] Create package metadata and scripts.
++- [x] Add lightweight gitignore.
++- [x] Save this implementation plan.
++
++### Task 2: Skill pack
++
++**Files:**
++- Create: `skills/choose-stack/SKILL.md`
++- Create: `skills/start-project/SKILL.md`
++- Create: `skills/build-step-by-step/SKILL.md`
++- Create: `skills/fix-error-safely/SKILL.md`
++
++- [ ] Write concise frontmatter with `name` and `description`.
++- [ ] Keep each skill focused on one job.
++- [ ] Encode display-first stack recommendations and demo-first planning.
++
++### Task 3: Installer
++
++**Files:**
++- Create: `install.mjs`
++- Create: `templates/AGENTS.md`
++
++- [ ] Implement copy logic for `.claude/skills`, `.codex/skills`, and `.agents/skills`.
++- [ ] Support project-local install by default.
++- [ ] Support `--target claude|codex|both|agents|all` and `--dry-run`.
++- [ ] Copy beginner `AGENTS.md` unless one exists.
++
++### Task 4: Demo and docs
++
++**Files:**
++- Create: `README.md`
++- Create: `demo/index.html`
++- Create: `examples/beginner-demo-plan.md`
++
++- [ ] Explain the product without requiring speech.
++- [ ] Show before/after behavior.
++- [ ] Include one copy-paste prompt for users.
++
++### Task 5: Validation
++
++**Files:**
++- Create: `scripts/validate.mjs`
++
++- [ ] Check each skill has valid frontmatter.
++- [ ] Check required demo/docs files exist.
++- [ ] Run `node scripts/validate.mjs`.
++- [ ] Run `node install.mjs --dry-run --target all --project /tmp/vibe-driving-school-test`.
+diff --git a/examples/beginner-demo-plan.md b/examples/beginner-demo-plan.md
+new file mode 100644
+index 0000000..4b9ab49
+--- /dev/null
++++ b/examples/beginner-demo-plan.md
+@@ -0,0 +1,42 @@
++# Demo-first plan: Student Habit Tracker
++
++## Idea
++A simple habit tracker that helps students see whether they studied, slept, and exercised this week.
++
++## What people should see
++A clean web page with today's habits, a weekly streak view, and one-click toggles.
++
++## Recommended stack
++TypeScript + Vite + React, because the demo is visual and should be visible in a browser quickly.
++
++## MVP scope
++- Show three default habits: Study, Sleep, Exercise.
++- Let the user toggle each habit for today.
++- Show a seven-day streak row using local browser storage.
++- Include a small "demo data" button so judges can see the final state immediately.
++
++## Not in this demo
++- User accounts: not needed for a local demo.
++- Database: browser storage is enough for the first version.
++- Mobile app: responsive web is faster and easier to show.
++
++## Build steps
++1. Create the Vite React app and render a static habit card layout.  
++   Verify: run `npm run dev` and open the local URL.
++2. Add toggle state for today's three habits.  
++   Verify: click each toggle and confirm the UI changes.
++3. Save habit state to localStorage.  
++   Verify: refresh the page and confirm toggles remain.
++4. Add seven-day streak display and demo data button.  
++   Verify: click demo data and confirm the week view fills in.
++5. Polish copy and add README instructions.  
++   Verify: a new user can run the app from README commands.
++
++## First prompt to paste
++`Use this plan. Build step 1 only, then stop and show me how to verify it.`
++
++
++## Silent demo transcript
++- User asks for a demo-first plan.
++- Assistant asks what people should see first.
++- Assistant recommends the simplest stack and a short verified plan.
+diff --git a/install.mjs b/install.mjs
+new file mode 100755
+index 0000000..7af62cf
+--- /dev/null
++++ b/install.mjs
+@@ -0,0 +1,243 @@
++#!/usr/bin/env node
++import { copyFile, mkdir, readdir, stat, access, readFile } from 'node:fs/promises';
++import { constants } from 'node:fs';
++import path from 'node:path';
++import process from 'node:process';
++import { fileURLToPath } from 'node:url';
++import { validateSkillsDirectory } from './scripts/validate.mjs';
++
++// 用 fileURLToPath 兼容带空格、中文路径和 Windows 路径。
++const root = path.dirname(fileURLToPath(import.meta.url));
++const skillSource = path.join(root, 'skills');
++const templateAgents = path.join(root, 'templates', 'AGENTS.md');
++// 不同 AI 工具会从不同目录读取技能，这里统一映射安装位置。
++const targetMap = {
++  claude: ['.claude/skills'],
++  codex: ['.codex/skills'],
++  agents: ['.agents/skills'],
++  both: ['.claude/skills', '.codex/skills'],
++  all: ['.claude/skills', '.codex/skills', '.agents/skills']
++};
++const flagOptions = new Set(['dry-run', 'force', 'help', 'h']);
++const valueOptions = new Set(['project', 'target']);
++
++let args;
++try {
++  args = parseArgs(process.argv.slice(2));
++} catch (error) {
++  console.error(`Argument error: ${error.message}`);
++  printHelp();
++  process.exit(1);
++}
++
++if (args.help || args.h) {
++  printHelp();
++  process.exit(0);
++}
++
++const projectDir = path.resolve(args.project ?? process.cwd());
++const target = args.target ?? 'all';
++const dryRun = Boolean(args['dry-run']);
++const force = Boolean(args.force);
++
++if (!targetMap[target]) {
++  console.error(`Unknown target: ${target}`);
++  printHelp();
++  process.exit(1);
++}
++
++main().catch((error) => {
++  console.error(`Install failed: ${error.message}`);
++  process.exit(1);
++});
++
++async function main() {
++  // 先校验本地技能包，避免把坏的 SKILL.md 安装到用户项目里。
++  const validationErrors = await validateSkillsDirectory(skillSource);
++  if (validationErrors.length > 0) {
++    throw new Error(`Local skills validation failed:\n- ${validationErrors.join('\n- ')}`);
++  }
++
++  const skills = await listSkillDirs(skillSource);
++  if (skills.length === 0) {
++    throw new Error('No skills found in ./skills');
++  }
++
++  console.log('Build a Dream installer');
++  console.log(`Project: ${projectDir}`);
++  console.log(`Target: ${target}`);
++  if (dryRun) {
++    console.log('Mode: dry run');
++  }
++  if (force) {
++    console.log('Overwrite mode: force');
++  }
++
++  for (const relativeTarget of targetMap[target]) {
++    const targetRoot = path.join(projectDir, relativeTarget);
++    await ensureDir(targetRoot);
++    for (const skill of skills) {
++      const from = path.join(skillSource, skill);
++      const to = path.join(targetRoot, skill);
++      await installSkill(from, to, projectDir, skill);
++    }
++  }
++
++  await installAgentsTemplate(projectDir);
++
++  console.log('\nDone. Try this prompt in Claude or Codex:');
++  console.log('Use the start-project skill to turn this idea into a small demo-first plan: [your idea].');
++  console.log('Codex users can also mention $start-project if skill mentions are enabled.');
++}
++
++function parseArgs(argv) {
++  const parsed = {};
++
++  for (let index = 0; index < argv.length; index += 1) {
++    const arg = argv[index];
++
++    if (arg === '-h') {
++      parsed.h = true;
++      continue;
++    }
++
++    if (!arg.startsWith('--')) {
++      throw new Error(`Unexpected argument: ${arg}`);
++    }
++
++    const option = arg.slice(2);
++    const eqIndex = option.indexOf('=');
++    const key = eqIndex >= 0 ? option.slice(0, eqIndex) : option;
++    const inlineValue = eqIndex >= 0 ? option.slice(eqIndex + 1) : undefined;
++
++    if (flagOptions.has(key)) {
++      if (inlineValue !== undefined && inlineValue !== '') {
++        throw new Error(`--${key} does not take a value`);
++      }
++      parsed[key] = true;
++      continue;
++    }
++
++    if (!valueOptions.has(key)) {
++      throw new Error(`Unknown option: --${key}`);
++    }
++
++    if (inlineValue !== undefined) {
++      if (inlineValue === '') {
++        throw new Error(`--${key} requires a value`);
++      }
++      parsed[key] = inlineValue;
++      continue;
++    }
++
++    const next = argv[index + 1];
++    if (!next || next.startsWith('-')) {
++      throw new Error(`--${key} requires a value`);
++    }
++
++    parsed[key] = next;
++    index += 1;
++  }
++
++  return parsed;
++}
++
++function printHelp() {
++  console.log(`Usage: node install.mjs [options]
++
++Options:
++  --project <path>       Project folder to install into. Defaults to current directory.
++  --target <target>      claude | codex | agents | both | all. Defaults to all.
++  --dry-run              Print actions without writing files.
++  --force                Overwrite existing installed skill files.
++  --help                 Show this help.
++
++Examples:
++  node install.mjs
++  node install.mjs --target both
++  node install.mjs --project ./my-demo --target all --dry-run
++  node install.mjs --target codex --force`);
++}
++
++async function listSkillDirs(dir) {
++  const entries = await readdir(dir, { withFileTypes: true });
++  return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
++}
++
++async function ensureDir(dir) {
++  if (dryRun) {
++    return;
++  }
++  await mkdir(dir, { recursive: true });
++}
++
++// 默认不覆盖已有技能；只有显式 --force 才覆盖，保护新手已有文件。
++async function installSkill(from, to, project, skill) {
++  const relativeDestination = path.relative(project, to);
++  const existing = await skillExists(to);
++
++  if (existing && !force) {
++    console.log(`${dryRun ? 'Would skip existing' : 'Skipped existing'} ${skill} -> ${relativeDestination}`);
++    return;
++  }
++
++  if (dryRun) {
++    console.log(`${existing ? 'Would overwrite existing' : 'Would install'} ${skill} -> ${relativeDestination}`);
++    return;
++  }
++
++  await copyDir(from, to);
++  console.log(`${existing ? 'Overwrote existing' : 'Installed'} ${skill} -> ${relativeDestination}`);
++}
++
++async function copyDir(from, to) {
++  await mkdir(to, { recursive: true });
++  const entries = await readdir(from, { withFileTypes: true });
++  for (const entry of entries) {
++    const source = path.join(from, entry.name);
++    const destination = path.join(to, entry.name);
++    if (entry.isDirectory()) {
++      await copyDir(source, destination);
++    } else if (entry.isFile()) {
++      await copyFile(source, destination);
++    }
++  }
++}
++
++// AGENTS.md 是项目规则入口；如果用户已有规则文件，就只提示跳过。
++async function installAgentsTemplate(project) {
++  const destination = path.join(project, 'AGENTS.md');
++  const exists = await pathExists(destination);
++  if (exists) {
++    console.log(`${dryRun ? 'Would skip existing' : 'Skipped existing'} AGENTS.md`);
++    return;
++  }
++
++  if (!dryRun) {
++    await mkdir(project, { recursive: true });
++    const content = await readFile(templateAgents, 'utf8');
++    if (!content.includes('Build a Dream')) {
++      throw new Error('Template AGENTS.md looks invalid.');
++    }
++    await copyFile(templateAgents, destination);
++  }
++
++  console.log(`${dryRun ? 'Would install' : 'Installed'} AGENTS.md`);
++}
++
++async function skillExists(targetDir) {
++  if (await pathExists(targetDir)) {
++    return true;
++  }
++  return pathExists(path.join(targetDir, 'SKILL.md'));
++}
++
++async function pathExists(targetPath) {
++  try {
++    await access(targetPath, constants.F_OK);
++    await stat(targetPath);
++    return true;
++  } catch {
++    return false;
++  }
++}
+diff --git a/package.json b/package.json
+new file mode 100644
+index 0000000..216f414
+--- /dev/null
++++ b/package.json
+@@ -0,0 +1,22 @@
++{
++  "name": "vibe-coding-driving-school",
++  "version": "0.1.0",
++  "description": "Build a Dream helps beginners turn rough ideas into display-first stack choices and Claude/Codex-executable demo plans.",
++  "type": "module",
++  "bin": {
++    "vibe-driving-school": "./install.mjs"
++  },
++  "scripts": {
++    "install:local": "node install.mjs",
++    "demo": "node -e \"console.log('Open demo/index.html in your browser')\"",
++    "validate": "node scripts/validate.mjs"
++  },
++  "keywords": [
++    "claude",
++    "codex",
++    "skills",
++    "vibe-coding",
++    "hackathon"
++  ],
++  "license": "MIT"
++}
+diff --git a/scripts/validate.mjs b/scripts/validate.mjs
+new file mode 100755
+index 0000000..3d1eab2
+--- /dev/null
++++ b/scripts/validate.mjs
+@@ -0,0 +1,151 @@
++#!/usr/bin/env node
++import { access, readFile, readdir, stat } from 'node:fs/promises';
++import { constants } from 'node:fs';
++import path from 'node:path';
++import process from 'node:process';
++import { fileURLToPath } from 'node:url';
++
++const moduleFile = fileURLToPath(import.meta.url);
++const root = path.resolve(path.dirname(moduleFile), '..');
++// 最小交付物检查：这些文件缺任何一个，黑客松展示都会断一环。
++const requiredFiles = [
++  'README.md',
++  'install.mjs',
++  'demo/index.html',
++  'examples/beginner-demo-plan.md',
++  'templates/AGENTS.md',
++  'package.json'
++];
++const expectedSkills = ['build-step-by-step', 'choose-stack', 'fix-error-safely', 'start-project'];
++const placeholderPattern = /\b(?:TODO|TBD)\b|fill in/i;
++
++// 返回错误列表而不是直接退出，方便安装器复用同一套校验逻辑。
++export async function collectValidationErrors(options = {}) {
++  const rootDir = options.rootDir ?? root;
++  const files = options.requiredFiles ?? requiredFiles;
++  const skills = options.expectedSkills ?? expectedSkills;
++  const errors = [];
++
++  for (const file of files) {
++    await requireFile(rootDir, file, errors);
++  }
++
++  const skillErrors = await validateSkillsDirectory(path.join(rootDir, 'skills'), { expectedSkills: skills });
++  errors.push(...skillErrors);
++  return errors;
++}
++
++// 校验每个 skill 的基本格式，确保 Claude/Codex 能读到 name 和 description。
++export async function validateSkillsDirectory(skillsDir, options = {}) {
++  const errors = [];
++  let entries = [];
++
++  try {
++    entries = await readdir(skillsDir, { withFileTypes: true });
++  } catch {
++    errors.push(`${path.relative(root, skillsDir) || 'skills'} directory is missing`);
++    return errors;
++  }
++
++  const skillDirs = entries
++    .filter((entry) => entry.isDirectory())
++    .map((entry) => entry.name)
++    .sort();
++
++  for (const skill of options.expectedSkills ?? []) {
++    if (!skillDirs.includes(skill)) {
++      errors.push(`${relativeFromRoot(path.join(skillsDir, skill))} is missing`);
++    }
++  }
++
++  for (const skill of skillDirs) {
++    errors.push(...(await validateSkillDirectory(skillsDir, skill)));
++  }
++
++  return errors;
++}
++
++async function validateSkillDirectory(skillsDir, skill) {
++  const errors = [];
++  const skillFile = path.join(skillsDir, skill, 'SKILL.md');
++  let content = '';
++
++  try {
++    content = await readFile(skillFile, 'utf8');
++  } catch {
++    errors.push(`${relativeFromRoot(skillFile)} is missing`);
++    return errors;
++  }
++
++  const frontmatter = parseFrontmatter(content);
++  if (!frontmatter) {
++    errors.push(`${relativeFromRoot(skillFile)} has no YAML frontmatter`);
++    return errors;
++  }
++
++  const name = getField(frontmatter, 'name');
++  const description = getField(frontmatter, 'description');
++
++  if (!name) {
++    errors.push(`${relativeFromRoot(skillFile)} is missing frontmatter name`);
++  } else if (name !== skill) {
++    errors.push(`${relativeFromRoot(skillFile)} name must be "${skill}"`);
++  }
++
++  if (!description) {
++    errors.push(`${relativeFromRoot(skillFile)} is missing frontmatter description`);
++  }
++
++  if (placeholderPattern.test(content)) {
++    errors.push(`${relativeFromRoot(skillFile)} contains placeholder text`);
++  }
++
++  return errors;
++}
++
++async function requireFile(rootDir, relativePath, errors) {
++  const file = path.join(rootDir, relativePath);
++  try {
++    await access(file, constants.R_OK);
++    const info = await stat(file);
++    if (!info.isFile()) {
++      errors.push(`${relativePath} is not a file`);
++    }
++  } catch {
++    errors.push(`${relativePath} is missing`);
++  }
++}
++
++// 这里只做轻量 frontmatter 解析，保持零依赖、启动快。
++function parseFrontmatter(content) {
++  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
++  return match ? match[1] : '';
++}
++
++function getField(frontmatter, field) {
++  const pattern = new RegExp(`^${field}:\\s*(.+)$`, 'm');
++  const match = frontmatter.match(pattern);
++  return match ? match[1].trim().replace(/^['"]|['"]$/g, '') : '';
++}
++
++function relativeFromRoot(file) {
++  return path.relative(root, file) || file;
++}
++
++async function runCli() {
++  const errors = await collectValidationErrors();
++
++  if (errors.length > 0) {
++    console.error('Validation failed:');
++    for (const error of errors) {
++      console.error(`- ${error}`);
++    }
++    process.exit(1);
++  }
++
++  console.log('Validation passed.');
++}
++
++if (process.argv[1] && path.resolve(process.argv[1]) === moduleFile) {
++  await runCli();
++}
+diff --git a/skills/build-step-by-step/SKILL.md b/skills/build-step-by-step/SKILL.md
+new file mode 100644
+index 0000000..e5eff96
+--- /dev/null
++++ b/skills/build-step-by-step/SKILL.md
+@@ -0,0 +1,67 @@
++---
++name: build-step-by-step
++description: Execute a demo-first project plan one small verified step at a time. Use when building from an MVP plan, when the user says to implement step by step, or when a beginner needs controlled AI coding without scope creep.
++---
++
++# Build Step By Step
++
++Build only the next useful slice. Do not jump ahead.
++
++## Workflow
++
++1. Read the current plan or summarize the user's requested next step.
++2. State the single step you will execute now.
++3. Make the smallest code or document changes needed for that step.
++4. Run the planned verification command, or provide a manual check if no command exists.
++5. Report the result, changed files, and the next step.
++
++## Guardrails
++
++- Do not add unplanned frameworks, services, databases, auth, payments, or deployment.
++- Do not rewrite the whole project when one small change works.
++- If a step is too large, split it into smaller visible slices.
++- If verification fails, switch to `fix-error-safely` before continuing.
++- Keep the demo usable at the end of every step.
++
++## Do not use when
++
++- There is no agreed plan or no clear next step to execute.
++- The task is mainly diagnosis of a failing command or broken behavior.
++
++## Progress report format
++
++```md
++## Step completed
++[one sentence]
++
++## Changed files
++- `path`: [what changed]
++
++## Verification
++- Command/check: `[command or manual check]`
++- Result: [pass/fail and short evidence]
++
++## Next step
++[next single step]
++```
++
++## Example
++
++**Input**: "Use the plan and only build the landing page shell first."
++
++**Expected output shape**:
++
++```md
++## Step completed
++Created the landing page shell with headline, CTA, and placeholder sections.
++
++## Changed files
++- `src/App.tsx`: replaced starter content with the landing page shell.
++
++## Verification
++- Command/check: `npm run build`
++- Result: pass, production build completed.
++
++## Next step
++Add the first interactive form section.
++```
+diff --git a/skills/choose-stack/SKILL.md b/skills/choose-stack/SKILL.md
+new file mode 100644
+index 0000000..7c5e538
+--- /dev/null
++++ b/skills/choose-stack/SKILL.md
+@@ -0,0 +1,79 @@
++---
++name: choose-stack
++description: Recommend a beginner-friendly language and tech stack from the user's idea and desired demo surface. Use when a user asks what to build with, starts a new vibe-coding project, has a vague app idea, or needs the fastest path to show a working demo.
++---
++
++# Choose Stack
++
++Help the user choose the fastest stack for a visible demo. Optimize for what the user wants to show, not for novelty.
++
++## Workflow
++
++1. Ask one question if the demo surface is unclear: "What do you want people to see first: a web page, a tool/installer, a CLI, a data result, an API, or something else?"
++2. Recommend one primary stack and one fallback only if useful.
++3. Explain the recommendation in plain language.
++4. State what not to use for this MVP.
++5. Hand off to `start-project` when the user wants a plan.
++
++## Default stack map
++
++| Demo goal | Default stack | Why |
++|---|---|---|
++| Website, landing page, dashboard, form, visual app | TypeScript + Vite + React | Fastest visible feedback in browser |
++| Small tool, installer, project generator, local automation | Node.js | Easy to run, package, and install |
++| CLI, lightweight service, distributable binary | Go | Stable, simple deployment, single binary |
++| Data cleanup, batch script, glue automation | Python | Good for scripts and data tasks |
++| Performance core, local systems module | Rust | Use only when performance or safety is central |
++| Mobile demo | Responsive web first | Avoid native app overhead |
++| Desktop demo | Web first | Avoid Electron unless desktop APIs are required |
++
++## Defaults
++
++- If there is no existing stack, prefer TypeScript/Node.
++- For hackathons, prefer the shortest path to a visible demo.
++- Do not pick Python as the main product stack unless the work is clearly data/script-heavy.
++- Do not pick Rust for beginners unless there is a real performance or systems reason.
++- Avoid adding databases, auth, queues, or cloud services unless the demo cannot work without them.
++
++## Do not use when
++
++- The project already has a committed stack and the user wants implementation inside it.
++- The user is asking for architecture, folder structure, or execution steps rather than stack choice.
++
++## Output format
++
++```md
++## Recommended stack
++[stack]
++
++## Why this fits the demo
++- [reason 1]
++- [reason 2]
++
++## Avoid for MVP
++- [technology or feature]: [reason]
++
++## Next step
++Use `start-project` to turn this into a small execution plan.
++```
++
++## Example
++
++**Input**: "I want a weekend demo where people upload a CSV and see a clean summary page."
++
++**Expected output shape**:
++
++```md
++## Recommended stack
++TypeScript + Vite + React
++
++## Why this fits the demo
++- Browser UI is the thing people will see first.
++- CSV parsing and a simple summary are easy to demo locally.
++
++## Avoid for MVP
++- Database: keep uploads local and temporary for the first demo.
++
++## Next step
++Use `start-project` to turn this into a small execution plan.
++```
+diff --git a/skills/fix-error-safely/SKILL.md b/skills/fix-error-safely/SKILL.md
+new file mode 100644
+index 0000000..5f04b16
+--- /dev/null
++++ b/skills/fix-error-safely/SKILL.md
+@@ -0,0 +1,64 @@
++---
++name: fix-error-safely
++description: Diagnose and fix errors without random trial-and-error. Use when tests fail, a command errors, a demo does not run, or the user reports broken behavior during vibe coding.
++---
++
++# Fix Error Safely
++
++Fix the smallest proven cause. Do not guess repeatedly.
++
++## Workflow
++
++1. Capture the exact failing command, the exact error line or command output, and the expected behavior.
++2. Reproduce the failure with the smallest command or manual action.
++3. Quote the precise failing line or output snippet you are using as evidence before naming a root cause.
++4. Identify the likely root cause from that evidence.
++5. Make the smallest fix.
++6. Re-run the same failing check.
++7. If it passes, run one nearby regression check if available.
++8. Report root cause, fix, and verification evidence.
++
++## Guardrails
++
++- Do not hide errors by deleting tests or weakening checks.
++- Do not introduce a new dependency unless the current stack cannot solve the issue.
++- Do not make broad rewrites while debugging.
++- Every diagnosis must cite the exact failing command output or error line it is based on.
++- If the root cause is unclear after two attempts, stop and narrow the reproduction.
++
++## Do not use when
++
++- The task is a planned feature build with no failure evidence yet.
++- The issue is a broad product redesign rather than a concrete failing command or behavior.
++
++## Output format
++
++```md
++## Root cause
++[short evidence-based cause, with the quoted error line or output]
++
++## Fix
++[what changed]
++
++## Verification
++- Failing check before: `[command]` -> [failure summary]
++- Same check after: `[command]` -> [pass summary]
++```
++
++## Example
++
++**Input**: "`npm test` fails with `Cannot find module './config'` after I renamed a file."
++
++**Expected output shape**:
++
++```md
++## Root cause
++`npm test` reported `Cannot find module './config'`, which points to an import path that no longer matches the renamed file.
++
++## Fix
++Updated the stale import to the current file name.
++
++## Verification
++- Failing check before: `npm test` -> failed with `Cannot find module './config'`
++- Same check after: `npm test` -> passed
++```
+diff --git a/skills/start-project/SKILL.md b/skills/start-project/SKILL.md
+new file mode 100644
+index 0000000..e7e26ea
+--- /dev/null
++++ b/skills/start-project/SKILL.md
+@@ -0,0 +1,102 @@
++---
++name: start-project
++description: Turn a beginner's rough product idea into a small, demo-ready project plan. Use when the user has a vague idea, wants to vibe code a new project, needs an MVP scope, or needs an AI-executable plan before implementation.
++---
++
++# Start Project
++
++Turn a vague idea into a small plan an AI coding agent can execute safely.
++
++## Principle
++
++The first goal is a working demo, not a complete product. Prefer small, visible, testable slices.
++
++## Workflow
++
++1. Summarize the user's idea in one sentence.
++2. Identify the demo surface: what the audience should see first.
++3. If stack is undecided, use `choose-stack` first.
++4. Define the MVP in 3 to 5 bullets.
++5. Define what is explicitly out of scope.
++6. Break the work into steps where every step creates visible or verifiable progress.
++7. Include a verification command or manual check for every step.
++8. End with the exact first prompt the user can paste into Claude or Codex.
++
++## Planning rules
++
++- Ask at most one clarifying question before planning. If a reasonable assumption exists, state it and continue.
++- Prefer local-first demos over cloud deployments.
++- Prefer static data over databases for first demos.
++- Prefer one-page demos over multi-screen apps.
++- Add auth only when the user is specifically demonstrating auth.
++- Keep names and file paths concrete enough for another agent to execute.
++
++## Do not use when
++
++- The user only wants stack selection; use `choose-stack` first.
++- A detailed implementation plan already exists and the next task is to execute one step.
++
++## Output format
++
++```md
++# Demo-first plan: [project name]
++
++## Idea
++[one sentence]
++
++## What people should see
++[demo surface]
++
++## Recommended stack
++[stack and short reason]
++
++## MVP scope
++- [feature 1]
++- [feature 2]
++- [feature 3]
++
++## Not in this demo
++- [excluded item and why]
++
++## Build steps
++1. [step]  
++   Verify: [command or manual check]
++2. [step]  
++   Verify: [command or manual check]
++3. [step]  
++   Verify: [command or manual check]
++
++## First prompt to paste
++`Use this plan. Build step 1 only, then stop and show me how to verify it.`
++```
++
++## Example
++
++**Before**: "Make me a simple app that helps roommates split bills."
++
++**After**:
++
++```md
++# Demo-first plan: roommate-bill-splitter
++
++## Idea
++A small web app that lets roommates enter shared costs and see who owes what.
++
++## What people should see
++A single page where costs are entered and totals update immediately.
++
++## Recommended stack
++TypeScript + Vite + React for the fastest visible local demo.
++
++## MVP scope
++- Add roommate names and shared expenses.
++- Show per-person totals instantly.
++- Keep data in memory for the first demo.
++
++## Not in this demo
++- Login: not needed for a local first pass.
++
++## Build steps
++1. Scaffold the app shell and input form.  
++   Verify: `npm run dev`
++```
+diff --git a/templates/AGENTS.md b/templates/AGENTS.md
+new file mode 100644
+index 0000000..2223c1e
+--- /dev/null
++++ b/templates/AGENTS.md
+@@ -0,0 +1,26 @@
++# Build a Dream
++
++This project uses Build a Dream: beginner-friendly AI coding rules based on the Vibe Coding Driving School method.
++
++## Default workflow
++
++1. Start with the user's demo goal: what should people see first?
++2. Choose the simplest stack that makes that demo visible quickly.
++3. Write a small plan before implementation.
++4. Build one verified step at a time.
++5. When something fails, reproduce first, then fix the smallest proven cause.
++
++## Stack defaults
++
++- Visual web demo: TypeScript + Vite + React.
++- Tool or installer: Node.js.
++- CLI or lightweight service: Go.
++- Data/script/glue: Python.
++- Performance/system core: Rust only when necessary.
++
++## Guardrails
++
++- Prefer local-first demos.
++- Avoid databases, auth, queues, cloud, and paid services unless the demo requires them.
++- Keep every step verifiable.
++- Do not claim completion before running a check or describing a manual verification path.
+-- 
+2.39.2 (Apple Git-143)
+
